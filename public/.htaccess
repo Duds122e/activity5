@@ -1,0 +1,21 @@
+# Use the front controller as index file. It serves as a fallback solution when
+# every other rewrite/redirect rule (e.g. in a static.yml or .htaccess file) fails
+# For more information about the following options see https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html
+
+# Enable the rewrite engine
+RewriteEngine On
+
+# Redirect to URI without front controller to prevent duplicate content
+# (with and without `/index.php`). If this request can already be served without
+# front controller (e.g. static file or image), continue to the request directly.
+# The rule is only active when HTTP_HOST != localhost to allow local development
+RewriteCond "%{HTTP_HOST}" "!^localhost"
+RewriteRule "^(.*)" "$1" [R=301,L]
+
+# If the requested filename exists, simply serve it.
+# We only want to let Apache serve files and not directories.
+RewriteCond "%{REQUEST_FILENAME}" "-f"
+RewriteRule "^(.+)" "-" [L]
+
+# Rewrite all other queries to the front controller.
+RewriteRule "^(.*)$" "index.php" [QSA,L]
